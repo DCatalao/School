@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using School.Web.Data;
 
 namespace School.Web
 {
@@ -24,6 +26,15 @@ namespace School.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            // Injection do DataContext com o Entity Framework, criou-se uma configuração que se conecta ao SQL Server através da interface Configuration que tem por função
+            // ler e localizar configurações no appsettings.json, neste caso a connection string "Default Connection"
+            // Estas configurações serão guardadas no parâmetro options no construtor do Data Context
+            services.AddDbContext<DataContext>(cfg =>
+            {
+                cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -52,6 +63,7 @@ namespace School.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            //configuração das routes do programa
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

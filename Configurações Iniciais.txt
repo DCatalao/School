@@ -1,0 +1,31 @@
+Para iniciar o projecto, primeiro se criou um repositório Git do mesmo. Neste repositório escolheu-se um .gitignore sobre o Visual Studio e uma licensa GNU General public license v3.0
+
+O .gitignore serve para informar ao Git quais os ficheiros e pastas ele deve ignorar num projecto.
+
+A licensa GNU é uma licensa a dizer que seu projecto é open source.
+
+----------------------------------------//---------------------------------------------------
+
+Após criação do repositório deve-se clonar a sua URL e iniciar um novo projecto no VS pela opção de clonar um repositório.
+
+Efectuar a configuração dos path do projecto.
+
+Finalmente deve-se iniciar o projecto com um project template de Class Library(.NET Framework) que será a livraria comum a todos os projectos desta solução.
+Por este motivo ela deve se chamar "nomedoprojecto".common
+
+Após a criação da livraria, deve-se inserir um novo projecto com um project template ASP.NET Web Application(.NET Framework). Este será responsável pelo backend do projecto na web.
+Por este motivo ela deve se chamar "nomedoprojecto".Web
+
+----------------------------------------//---------------------------------------------------
+
+No Core já não se utiliza o XML, apenas o Json e por este motivo NÃO existe o ficheiro webconfig .
+
+Todas as configurações do projecto então devem ser inseridas no appsettings.Json como por exemplo as string connections do projecto e outras configurações.
+
+O ficheiro Program.cs é o responsável por construir o host(servidor) do programa (através do Docker) para que ele consiga rodar em quaquer sistema operativo.
+
+Mas para o Program conseguir construir o host é necessário que se injecte o ficheiro Startup.cs que contém toda a informação de arranque do programa. É aqui no Startup.cs que também se
+encontram as routes de configuração.
+
+----------------------------------------//---------------------------------------------------
+

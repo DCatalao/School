@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "School.Common", "School.Common\School.Common.csproj", "{40EECCF8-F425-4DA3-B9C8-63383B84FB0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "School.Web", "School.Web\School.Web.csproj", "{9C0BD243-3F1A-4D21-B6A2-BDA2D45FD203}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "School.Web", "School.Web\School.Web.csproj", "{9C0BD243-3F1A-4D21-B6A2-BDA2D45FD203}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Daniel", "Daniel", "{D1ACB945-95A5-40E2-8E99-97C6CCF9D2DB}"
+	ProjectSection(SolutionItems) = preProject
+		Configurações Iniciais.txt = Configurações Iniciais.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

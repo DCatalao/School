@@ -1,0 +1,7 @@
+﻿Esta Pasta foi criada para receber todas as classes que antes eram tratadas como os modelos, no Core ela vão ser tratadas como Data Entities
+
+Dentro da pasta Entities é guardada os objectos das classes das entities.
+
+O Entity Frmaework será o responsável por mapear estas classes com a base de dados.
+
+Este mapeamento ocorre no ficheiro DataContext na pasta Data
