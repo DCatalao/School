@@ -5,3 +5,18 @@ Dentro da pasta Entities é guardada os objectos das classes das entities.
 O Entity Frmaework será o responsável por mapear estas classes com a base de dados.
 
 Este mapeamento ocorre no ficheiro DataContext na pasta Data
+
+------------------------------//-----------------------------------
+
+O ficheiro Data Context é o responsável por fazer a construção e a ligação com a base de dados. ele recebe a entidade que deverá ser construida na BD e desta forma ja sabe quais parametros
+são necessários para a sua criação e seus respectivos tipos.
+
+O Data Context está injectado no ficheiro StartUp e lá recebe a configuração da connection string para fazer ligação a Base de dados através do SQLServer(escolhido por nós)
+
+------------------------------//-----------------------------------
+
+O ficheiro SeedDb é responsável por inserir os dados iniciais da BD caso queria que ela preencha alguns dados após sua criação. Exemplo cidades e etc...
+
+Este ficheiro deve ser injectado no ficheiro Program.cs antes deste correr o arranque.
+
+Além disso, deve se criar no StartUp.cs um novo serviço com o método AddTransient que receberá o SeedDb ***(Pesquisar sobre este método AddTransient)

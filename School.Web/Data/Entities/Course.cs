@@ -11,6 +11,8 @@ namespace School.Web.Data.Entities
 
 
         [Display(Name = "Nome")]
+        [MaxLength(50, ErrorMessage ="O campo {0} permite no máximo {1} caracteres")]
+        [Required]
         public string CourseName { get; set; }
 
 
@@ -19,19 +21,19 @@ namespace School.Web.Data.Entities
 
 
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)] // Data format string 0:C2 quer dizer que é um valor numérico em formato currency e possui 2 casas decimais
-        public decimal Price { get; set; }                                      // Apply Format In Edit Mode = false significa que na base de dados os dados inseridos não serão gravados
-                                                                                // como els estão apresentados e sim como estão por default.
+        public decimal Price { get; set; }                                          // Apply Format In Edit Mode = false significa que na base de dados os dados inseridos não serão gravados
+                                                                                    // como els estão apresentados e sim como estão por default.
 
         [Display(Name = "Logo do Curso")]
         public string ImageLogoURL { get; set; }
 
 
         [Display(Name = "Data de início")]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
 
         [Display(Name = "Data de término")]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }
