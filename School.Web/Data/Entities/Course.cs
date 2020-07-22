@@ -11,7 +11,7 @@ namespace School.Web.Data.Entities
 
 
         [Display(Name = "Nome")]
-        [MaxLength(50, ErrorMessage ="O campo {0} permite no máximo {1} caracteres")]
+        [MaxLength(50, ErrorMessage ="O campo '{0}' permite no máximo {1} caracteres")]
         [Required]
         public string CourseName { get; set; }
 
