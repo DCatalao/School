@@ -35,7 +35,11 @@ namespace School.Web
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddTransient<SeedDb>();
+            services.AddTransient<SeedDb>(); //O Transient instancia o objecto no momento em que ele é requisitado e depois apaga
+            //services.AddSingleton<SeedDb>();  --> Ao contrario do Transient, o Singleton ao instanciar, mantem o objecto instanciado ad aeternum (**EVITAR**)
+            // services.AddScoped<SeedDb>(); --> Assim como o Singleton, o objecto fica instanciado, porém se for requisitado um novo objecto de mesmo nome, ele instancia o novo e apaga o antigo
+            services.AddScoped<ICourseRepository, CourseRepository>(); // Nesta situação se injecta a interface do repositório para quando for preciso poder ir buscar o repositório
+            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

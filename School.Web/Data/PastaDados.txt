@@ -20,3 +20,57 @@ O ficheiro SeedDb é responsável por inserir os dados iniciais da BD caso queri
 Este ficheiro deve ser injectado no ficheiro Program.cs antes deste correr o arranque.
 
 Além disso, deve se criar no StartUp.cs um novo serviço com o método AddTransient que receberá o SeedDb ***(Pesquisar sobre este método AddTransient)
+
+------------------------------//-----------------------------------
+
+O ficheiro Repository foi utlizado como exemplo de como criar manualmente e para ver o funcionamento do CRUD atraves do DbSet.
+
+Cria-se os métodos do CRUD e o próprio DbSet se encarrega de cumprir as ordens na base de dados.
+
+Para podermos fazer uso deste repositório, é necessário injecta-lo no StartUp.cs como um novo serviço a arrancar junto com o programa
+
+services.AddScoped<IRepository, Repository>();
+
+------------------------------//-----------------------------------
+
+O ficheiro IRepository é criado como uma interface do repository que tem por objectivo ser injectada com o repository pretendido como podemos ver na linha a seguir
+services.AddScoped<IRepository, Repository>();
+
+Neste caso em especifico apenas existe o repository dos cursos, porém se existissem outros repositorios com os mesmos métodos, poderia ser chamado a mesma interface.
+
+Mas esta ainda não é a forma mais eficiente de se fazer este movimento visto que estamos presos a um modelo de repositorio ainda preso a um objecto especifico.
+
+Desta forma, tanto o ficheiro repository quanto o IRepository estão aqui apenas por questões de estudos e não serão utilizados mais a frente.
+
+------------------------------//-----------------------------------
+
+Para colmatar a limitação da interface acima, foi criado uma interface genérica a todos as classes chamada IEntity, esta possui proprieadades comuns a todas as classe, neste exemplo o Id,
+Mas poderia ter as que achar necessário.
+
+Todas as classes irão herdar caracteristicas da classe IEntity e por isso, neste caso, o Id será único e não se repetirá mesmo em classes diferentes.
+
+------------------------------//-----------------------------------
+
+O ficheiro IGenericRepository tem por objectivo ser a interface que efectuará o CRUD de uma classe genérica, ou seja, qualquer classe que ele receber.
+
+Isso irá reduzir o trabalho visto que não é necessário criar uma interface para cada repositorio, nem injectar diversas interfaces no arranque dos serviços no ficheiro StartUp.cs
+
+------------------------------//-----------------------------------
+
+O ficheiro GenericRepository é onde as funcionalidades dos métodos utilizados pela interface estão implementados, é também responsável por receber via data context as informações da classe
+em questão e das informações sobre a base de dados.
+
+------------------------------//-----------------------------------
+
+O ficheiro ICourseRepository é uma interface que tem por único ojectivo ser injectado no StartUp.cs visto que os repositório genéricos não podem ser injectados directamente
+
+Por este motivo o ICourseRepository em sua construção recebe o modelo genérico e insere a classe pretendida dentro destes moldes e assim poder ser injectado no StartUp.cs 
+
+------------------------------//-----------------------------------
+
+O ficheiro CourseRepository possui a mesma função do ICourseRespository sendo que neste caso ele irá usar o GenericRepository para construir o repositório da classe course, vai receber
+juntamente com o GenericRepository a sua Interface IGenericRepository e no seu construtor vai receber também as informações da Base de Dados via DataContext e preencher o repositório com
+estas informações.
+
+Estas informações estarão acessiveis via StartUp.cs pois neste formato o CourseRepository já pode ser injectado nos serviços do programa
+

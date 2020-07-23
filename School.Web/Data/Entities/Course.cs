@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace School.Web.Data.Entities
 {
-    public class Course
+    public class Course : IEntity // Course esta a herdar caracteristicas da classe genérica IEntity que possui caracteristicas comuns a todas as classes.
     {
         // Quando se diz que uma propriedade tem o nome Id e possui um valor Int, o Entity Framework já sabe que esta propriedade será chave primária
         // e não é necessário informar através dos data annotations

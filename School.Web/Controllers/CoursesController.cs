@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using School.Web.Data;
 using School.Web.Data.Entities;
+using System.Threading.Tasks;
 
 namespace School.Web.Controllers
 {
     public class CoursesController : Controller
     {
-        private readonly DataContext _context;
+        private readonly ICourseRepository _courseRepository;
 
-        public CoursesController(DataContext context)
+        public CoursesController(ICourseRepository courseRepository)
         {
-            _context = context;
+            _courseRepository = courseRepository;
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Courses.ToListAsync());
+            return View(_courseRepository.GetAll());
         }
 
         // GET: Courses/Details/5
@@ -33,8 +29,8 @@ namespace School.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await _courseRepository.GetByIdAsync(id.Value); // pelo parametro de entrada do método ser opcional (int? id), o método GetCourse tem de receber o 'value' do Id que pode ser nulo
+
             if (course == null)
             {
                 return NotFound();
@@ -54,12 +50,12 @@ namespace School.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CourseName,Description,Price,ImageLogoURL,StartDate,EndDate")] Course course)
+        public async Task<IActionResult> Create(Course course)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(course);
-                await _context.SaveChangesAsync();
+                await _courseRepository.CreateAsync(course);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(course);
@@ -73,7 +69,7 @@ namespace School.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _courseRepository.GetByIdAsync(id.Value);
             if (course == null)
             {
                 return NotFound();
@@ -86,23 +82,19 @@ namespace School.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CourseName,Description,Price,ImageLogoURL,StartDate,EndDate")] Course course)
+        public async Task<IActionResult> Edit(Course course)
         {
-            if (id != course.Id)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(course);
-                    await _context.SaveChangesAsync();
+                    await _courseRepository.UpdateAsync(course);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(course.Id))
+                    if (!await _courseRepository.ExistsAsync(course.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +116,7 @@ namespace School.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await _courseRepository.GetByIdAsync(id.Value);
             if (course == null)
             {
                 return NotFound();
@@ -139,15 +130,10 @@ namespace School.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var course = await _context.Courses.FindAsync(id);
-            _context.Courses.Remove(course);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var course = await _courseRepository.GetByIdAsync(id);
+            await _courseRepository.DeleteAsync(course);
 
-        private bool CourseExists(int id)
-        {
-            return _context.Courses.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
