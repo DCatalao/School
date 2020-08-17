@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using School.Web.Data;
+using School.Web.Data.Entities;
+using School.Web.Helpers;
 
 namespace School.Web
 {
@@ -27,6 +30,18 @@ namespace School.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddIdentity<User, IdentityRole>(cfg =>
+           {
+               cfg.User.RequireUniqueEmail = true;
+               cfg.Password.RequireDigit = false;
+               cfg.Password.RequiredUniqueChars = 0;
+               cfg.Password.RequireLowercase = false;
+               cfg.Password.RequireNonAlphanumeric = false;
+               cfg.Password.RequireUppercase = false;
+               cfg.Password.RequiredLength = 6;
+           })
+           .AddEntityFrameworkStores<DataContext>();
+
             // Injection do DataContext com o Entity Framework, criou-se uma configuração que se conecta ao SQL Server através da interface Configuration que tem por função
             // ler e localizar configurações no appsettings.json, neste caso a connection string "Default Connection"
             // Estas configurações serão guardadas no parâmetro options no construtor do Data Context
@@ -40,6 +55,7 @@ namespace School.Web
             // services.AddScoped<SeedDb>(); --> Assim como o Singleton, o objecto fica instanciado, porém se for requisitado um novo objecto de mesmo nome, ele instancia o novo e apaga o antigo
             services.AddScoped<ICourseRepository, CourseRepository>(); // Nesta situação se injecta a interface do repositório para quando for preciso poder ir buscar o repositório
             services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+            services.AddScoped<IUserHelper, UserHelper>(); //Injecção da classe UserHelper que serve de camada intermediaria na manipulação dos usuarios (ByPass)
 
             services.Configure<CookiePolicyOptions>(options =>
             {

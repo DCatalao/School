@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using School.Web.Data.Entities;
 
 namespace School.Web.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User> //Ao utilizar o IdentityUser na classe User, O DataContext já não pode herdar do DbContext e sim do IdentityUserDbContext,
+                                                       //onde será injectado o User e as propriedades novas
     {
         // O mapeamento da entidade course é feita através do desta propiedade DbSet que recebe o course através de uma injection
         // todas as classes existentes devem passar por aqui para ser injectadas nas interfaces genéricas

@@ -35,5 +35,7 @@ namespace School.Web.Data.Entities
         [Display(Name = "Data de término")]
         public DateTime? EndDate { get; set; }
 
+        public User User { get; set; }
+
     }
 }

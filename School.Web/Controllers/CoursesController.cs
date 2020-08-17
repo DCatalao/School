@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using School.Web.Data;
 using School.Web.Data.Entities;
+using School.Web.Helpers;
 using System.Threading.Tasks;
 
 namespace School.Web.Controllers
@@ -9,10 +10,12 @@ namespace School.Web.Controllers
     public class CoursesController : Controller
     {
         private readonly ICourseRepository _courseRepository;
+        private readonly IUserHelper _userHelper;
 
-        public CoursesController(ICourseRepository courseRepository)
+        public CoursesController(ICourseRepository courseRepository, IUserHelper userHelper)
         {
             _courseRepository = courseRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Courses
@@ -54,6 +57,10 @@ namespace School.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                //TODO: Change to the Logged user
+                
+                course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
+
                 await _courseRepository.CreateAsync(course);
 
                 return RedirectToAction(nameof(Index));
@@ -89,6 +96,10 @@ namespace School.Web.Controllers
             {
                 try
                 {
+                    //TODO: Change to the Logged user
+
+                    course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
+
                     await _courseRepository.UpdateAsync(course);
 
                 }
