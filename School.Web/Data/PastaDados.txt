@@ -74,3 +74,85 @@ estas informações.
 
 Estas informações estarão acessiveis via StartUp.cs pois neste formato o CourseRepository já pode ser injectado nos serviços do programa
 
+
+------------------------------//-----------------------------------
+*************************AUTENTICAÇÃO******************************
+------------------------------//-----------------------------------
+
+Para iniciar o processo de criação de formas de autenticar um usuário para utilizar um programa, é necessário que os usuários estejam registados na base de dados, que os dados destes usuários
+não sejam de visualização simples (sem criptografia) e que possamos fazer um registo das acções que este usuário efectuou.
+
+Então a primeira acção a ser feita é criar uma classe para sabermos quais os tipos de dados serão registados na base de dados.
+
+Na pasta Entitites então á adicionada a classe User. Porém esta classe vai herdar de uma classe da própria AspNetCore criada exclusivamente para a criação de usuários, a IdentityUser.
+
+Esta herança é adicionada por diversos motivos, alguns deles sendo o facto de ja possuir métodos e propriedades úteis para um completo CRUD de usuário, já tratar da segurança e criptografia e etc.
+
+É aconselhável verificar a documentação desta classe para termos ideia das propriedades ja inseridas (ex. email, phonenumber etc) e dos métodos disponíveis (ex. findUserByEmail)
+
+Poderíamos utilizar a classe IdentityUser com ela está (por ser muito completa), porém no caso de precisar de informações específicas do usuário como primeiro nome ou sobrenome é necessário
+que na classe User que criamos, sejam inseridas estas propriedades. Assim como qualquer outra propriedade ou método que achar necessário.
+
+------------------------------//-----------------------------------
+
+**DataContext**
+
+No ficheiro DataContext.cs será então necessário actualizar a herança da classe, que agora receberá também a informação do Usuário para manipular a base de dados, de forma a saber quem efectuaou as
+alterações equais permissões este usuário possui para alterar a base de dados.
+
+Então a classe DataContext passa a herdar da classe IdentityDbContext<User>
+
+Se olharmos a documentação desta classe podemos verificar que ela se ocupa de verificar roles, claims, tokens, logins e etc.
+
+------------------------------//-----------------------------------
+
+**UserHelper & IUserHelper**
+
+Então agora o melhor a se fazer, porém não necessário, é criar uma camada intermediária para tratar estas informações do usuário. esta camada intermediária vai servir de byPass de informações.
+
+É aconselhável a introdução desta camada porque ao ser um byPass de dados, significa que podemos criar métodos próprios para utilizar alguns dados. Ou seja, poderemos personalizar a forma como o
+programa utiliza os dados para melhor se adaptar as nossas necessidades.
+
+Então para inciar, a melhor prática é criar uma pasta para o Helpers dentro da solução, pois poderemos ter helpers para outras classes além da User.
+
+Nesta pasta será inserida uma interface e uma classe dedicadas a classe User, serão elas a IUserHelper e UserHelper
+
+A interface IUserHelper neste primeiro momento vai ser responsável pela "Task" de procurar um usuário através de um email inserido e guardar este usuário como um objecto da classe User.
+Também será responsável pela tarefa(Task) de adicionar um usuário a um objecto User e associar a uma password.
+
+A classe UserHelper terá a interface IUserHelper implementada e como propriedade receberá um objecto UserManager com o User inserido.
+
+Os métodos desta classe serão neste momento um espelho das funções do objecto UserManager, que tem por objectivo manipular as informações do Usuário, criando assim um ByPass para podermos
+ter mais controle e uma maior personalização.
+
+Basta reparar que o método AddUserAsync apenas chama o método com a mesma função do UserManager "CreateAsync", a ideia aqui é mesmo adicionar uma camada para acções 
+futuras sem alterar a funcionalidade.
+
+------------------------------//-----------------------------------
+
+**StartUp**
+
+No ficheiro Startup, é injectado o serviço da interface IUserHelper para sua utilização na solução.
+
+services.AddScoped<IUserHelper, UserHelper>();
+
+------------------------------//-----------------------------------
+
+**SeedDb**
+
+Como inserimos um novo objecto ao programa que deve guardar dados e poder manipula-los, temos de inserí-lo também na criação da base de dados.
+Esse novo objecto é o User e anteriormente já criamos os helpers para a manipulação dos dados deste objecto, faltando agora apenas guarda-los.
+
+Desta forma, dentro do ficheiro SeedDb, temos de receber no contructor da classe a interface IUserHelper e criar a propriedade para recebe-la.
+
+Então quando o ficheiro Program arrancar, ele vai até o ficheiro SeedDb para verificar se existe uma base de dados ou se deve criar uma e envia os dados de arranque para o construtor
+do SeedDb.
+
+Após termos recebidos os dados do Program através do constructor da classe, O Program executa a tarefa(Task) SeedAsync() do SeedDb e desta forma verifica primeiro se já existe uma Base de Dados
+
+No caso de não existir, vai se criar um nova base de dados e agora já inserir um usuário inicial com uma senha pré-carregada.
+
+Todos os cursos pré-carregados nesta base de dados através do SeedDb terão como criador o User inicial.
+
+------------------------------//-----------------------------------
+
