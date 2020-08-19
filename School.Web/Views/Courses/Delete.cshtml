@@ -33,7 +33,10 @@
             @Html.DisplayNameFor(model => model.ImageLogoURL)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.ImageLogoURL)
+            @if (!string.IsNullOrEmpty(Model.ImageLogoURL))
+            {
+                <img src="@Url.Content(Model.ImageLogoURL)" alt="Image" style="width:200px;height:350px;max-width:100%;height:auto" />
+            }
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.StartDate)

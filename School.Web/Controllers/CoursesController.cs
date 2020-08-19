@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using School.Web.Data;
 using School.Web.Data.Entities;
 using School.Web.Helpers;
+using School.Web.Models;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace School.Web.Controllers
@@ -53,10 +55,29 @@ namespace School.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Course course)
+        public async Task<IActionResult> Create(CourseViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var path = string.Empty;
+
+                if(model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot\\images\\CoursesLogo",
+                        model.ImageFile.FileName);
+
+                    using(var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+
+                    path = $"~/images/CoursesLogo/{model.ImageFile.FileName}";
+                }
+
+                var course = this.ToCourse(model, path);
+
                 //TODO: Change to the Logged user
                 
                 course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
@@ -65,7 +86,22 @@ namespace School.Web.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+            return View(model);
+        }
+
+        private Course ToCourse(CourseViewModel view, string path)
+        {
+            return new Course
+            {
+                Id = view.Id,
+                ImageLogoURL = path,
+                CourseName = view.CourseName,
+                Description = view.Description,
+                Price = view.Price,
+                StartDate = view.StartDate,
+                EndDate = view.EndDate,
+                User = view.User
+            };
         }
 
         // GET: Courses/Edit/5
@@ -81,7 +117,25 @@ namespace School.Web.Controllers
             {
                 return NotFound();
             }
-            return View(course);
+
+            var view = this.ToCourseViewModel(course);
+
+            return View(view);
+        }
+
+        private CourseViewModel ToCourseViewModel(Course course)
+        {
+            return new CourseViewModel
+            {
+                Id = course.Id,
+                ImageLogoURL = course.ImageLogoURL,
+                CourseName = course.CourseName,
+                Description = course.Description,
+                Price = course.Price,
+                StartDate = course.StartDate,
+                EndDate = course.EndDate,
+                User = course.User
+            };
         }
 
         // POST: Courses/Edit/5
@@ -89,13 +143,32 @@ namespace School.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Course course)
+        public async Task<IActionResult> Edit(CourseViewModel model)
         {
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var path = model.ImageLogoURL;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        path = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot\\images\\CoursesLogo",
+                            model.ImageFile.FileName);
+
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await model.ImageFile.CopyToAsync(stream);
+                        }
+
+                        path = $"~/images/CoursesLogo/{model.ImageFile.FileName}";
+                    }
+
+                    var course = this.ToCourse(model, path);
+
                     //TODO: Change to the Logged user
 
                     course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
@@ -105,7 +178,7 @@ namespace School.Web.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _courseRepository.ExistsAsync(course.Id))
+                    if (!await _courseRepository.ExistsAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -116,7 +189,7 @@ namespace School.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+            return View(model);
         }
 
         // GET: Courses/Delete/5
