@@ -10,5 +10,6 @@ namespace School.Web.Data
     //informar no serviços no StartUp.cs
     public interface ICourseRepository : IGenericRepository<Course>
     {
+        IQueryable GetAllWithUsers();
     }
 }

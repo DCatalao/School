@@ -4,7 +4,9 @@ using School.Web.Data;
 using School.Web.Data.Entities;
 using School.Web.Helpers;
 using School.Web.Models;
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace School.Web.Controllers
@@ -23,7 +25,7 @@ namespace School.Web.Controllers
         // GET: Courses
         public IActionResult Index()
         {
-            return View(_courseRepository.GetAll());
+            return View(_courseRepository.GetAll().OrderBy(p => p.CourseName));
         }
 
         // GET: Courses/Details/5
@@ -63,17 +65,20 @@ namespace School.Web.Controllers
 
                 if(model.ImageFile != null && model.ImageFile.Length > 0)
                 {
+                    var guid = Guid.NewGuid().ToString(); // criação do número aleatório para salvar como nome da imagem e assim não ocorrer repetidos
+                    var file = $"{guid}.jpg"; // Nome para o arquivo de imagem
+
                     path = Path.Combine(
                         Directory.GetCurrentDirectory(),
                         "wwwroot\\images\\CoursesLogo",
-                        model.ImageFile.FileName);
+                        file);
 
                     using(var stream = new FileStream(path, FileMode.Create))
                     {
                         await model.ImageFile.CopyToAsync(stream);
                     }
 
-                    path = $"~/images/CoursesLogo/{model.ImageFile.FileName}";
+                    path = $"~/images/CoursesLogo/{file}";
                 }
 
                 var course = this.ToCourse(model, path);
@@ -154,17 +159,20 @@ namespace School.Web.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
+                        var guid = Guid.NewGuid().ToString(); 
+                        var file = $"{guid}.jpg"; 
+
                         path = Path.Combine(
                             Directory.GetCurrentDirectory(),
                             "wwwroot\\images\\CoursesLogo",
-                            model.ImageFile.FileName);
+                            file);
 
                         using (var stream = new FileStream(path, FileMode.Create))
                         {
                             await model.ImageFile.CopyToAsync(stream);
                         }
 
-                        path = $"~/images/CoursesLogo/{model.ImageFile.FileName}";
+                        path = $"~/images/CoursesLogo/{file}";
                     }
 
                     var course = this.ToCourse(model, path);

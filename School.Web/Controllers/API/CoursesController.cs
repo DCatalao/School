@@ -22,7 +22,7 @@ namespace School.Web.Controllers.API
         [HttpGet]
         public IActionResult GetProducts()
         {
-            return Ok(_courseRepository.GetAll());
+            return Ok(_courseRepository.GetAllWithUsers());
         }
 
     }

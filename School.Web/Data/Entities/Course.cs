@@ -37,5 +37,18 @@ namespace School.Web.Data.Entities
 
         public User User { get; set; }
 
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ImageLogoURL))
+                {
+                    return null;
+                }
+
+                return $"https://schoolcet46web.azurewebsites.net{this.ImageLogoURL.Substring(1)}"; //O substring é para tirar o "~" no inicio do endereço gravado na Base de dados
+            }
+        }
+
     }
 }
