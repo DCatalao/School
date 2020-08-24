@@ -85,6 +85,7 @@ namespace School.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseCookiePolicy();
 
             //configuração das routes do programa

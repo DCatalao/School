@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using School.Web.Data;
 using School.Web.Data.Entities;
@@ -10,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace School.Web.Controllers
-{
+{    
     public class CoursesController : Controller
     {
         private readonly ICourseRepository _courseRepository;
@@ -54,6 +55,7 @@ namespace School.Web.Controllers
             return View(course);
         }
 
+        [Authorize]
         // GET: Courses/Create
         public IActionResult Create()
         {
@@ -105,6 +107,7 @@ namespace School.Web.Controllers
         //    };
         //}
 
+        [Authorize]
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -184,6 +187,7 @@ namespace School.Web.Controllers
             return View(model);
         }
 
+        [Authorize]
         // GET: Courses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

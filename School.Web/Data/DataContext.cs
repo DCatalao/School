@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using School.Web.Data.Entities;
+using System.Linq;
 
 namespace School.Web.Data
 {
@@ -18,6 +19,27 @@ namespace School.Web.Data
         //Então este parametro é enviado para a base
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Course>()
+                .Property(p => p.Price)
+                .HasColumnType("decimal(10,2)");
+
+            //Habilitar a cascade delete rule
+            var cascadeFKs = modelBuilder
+                .Model
+                .GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach(var fk in cascadeFKs)
+            {
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
