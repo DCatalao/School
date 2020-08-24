@@ -56,6 +56,8 @@ namespace School.Web
             services.AddScoped<ICourseRepository, CourseRepository>(); // Nesta situação se injecta a interface do repositório para quando for preciso poder ir buscar o repositório
             services.AddScoped<IDisciplineRepository, DisciplineRepository>();
             services.AddScoped<IUserHelper, UserHelper>(); //Injecção da classe UserHelper que serve de camada intermediaria na manipulação dos usuarios (ByPass)
+            services.AddScoped<IImageHelper, ImageHelper>(); // Injecção da classe ImageHelper que trata de gravar e editar imagens
+            services.AddScoped<IConverterHelper, ConverterHelper>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

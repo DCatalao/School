@@ -15,11 +15,19 @@ namespace School.Web.Controllers
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
-        public CoursesController(ICourseRepository courseRepository, IUserHelper userHelper)
+        public CoursesController(
+            ICourseRepository courseRepository, 
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
             _courseRepository = courseRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Courses
@@ -65,23 +73,10 @@ namespace School.Web.Controllers
 
                 if(model.ImageFile != null && model.ImageFile.Length > 0)
                 {
-                    var guid = Guid.NewGuid().ToString(); // criação do número aleatório para salvar como nome da imagem e assim não ocorrer repetidos
-                    var file = $"{guid}.jpg"; // Nome para o arquivo de imagem
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\CoursesLogo",
-                        file);
-
-                    using(var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    }
-
-                    path = $"~/images/CoursesLogo/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "CoursesLogo");
                 }
 
-                var course = this.ToCourse(model, path);
+                var course = _converterHelper.ToCourse(model, path, true);
 
                 //TODO: Change to the Logged user
                 
@@ -94,20 +89,21 @@ namespace School.Web.Controllers
             return View(model);
         }
 
-        private Course ToCourse(CourseViewModel view, string path)
-        {
-            return new Course
-            {
-                Id = view.Id,
-                ImageLogoURL = path,
-                CourseName = view.CourseName,
-                Description = view.Description,
-                Price = view.Price,
-                StartDate = view.StartDate,
-                EndDate = view.EndDate,
-                User = view.User
-            };
-        }
+        //   **********A função abaixo foi substituida pela interface IConverterHelper*************
+        //private Course ToCourse(CourseViewModel view, string path)
+        //{
+        //    return new Course
+        //    {
+        //        Id = view.Id,
+        //        ImageLogoURL = path,
+        //        CourseName = view.CourseName,
+        //        Description = view.Description,
+        //        Price = view.Price,
+        //        StartDate = view.StartDate,
+        //        EndDate = view.EndDate,
+        //        User = view.User
+        //    };
+        //}
 
         // GET: Courses/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -123,25 +119,26 @@ namespace School.Web.Controllers
                 return NotFound();
             }
 
-            var view = this.ToCourseViewModel(course);
+            var view = _converterHelper.ToCourseViewModel(course);
 
             return View(view);
         }
 
-        private CourseViewModel ToCourseViewModel(Course course)
-        {
-            return new CourseViewModel
-            {
-                Id = course.Id,
-                ImageLogoURL = course.ImageLogoURL,
-                CourseName = course.CourseName,
-                Description = course.Description,
-                Price = course.Price,
-                StartDate = course.StartDate,
-                EndDate = course.EndDate,
-                User = course.User
-            };
-        }
+        //   **********A função abaixo foi substituida pela interface IConverterHelper*************
+        //private CourseViewModel ToCourseViewModel(Course course)
+        //{
+        //    return new CourseViewModel
+        //    {
+        //        Id = course.Id,
+        //        ImageLogoURL = course.ImageLogoURL,
+        //        CourseName = course.CourseName,
+        //        Description = course.Description,
+        //        Price = course.Price,
+        //        StartDate = course.StartDate,
+        //        EndDate = course.EndDate,
+        //        User = course.User
+        //    };
+        //}
 
         // POST: Courses/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -159,23 +156,10 @@ namespace School.Web.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-                        var guid = Guid.NewGuid().ToString(); 
-                        var file = $"{guid}.jpg"; 
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\images\\CoursesLogo",
-                            file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.ImageFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/CoursesLogo/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "CoursesLogo");
                     }
 
-                    var course = this.ToCourse(model, path);
+                    var course = _converterHelper.ToCourse(model, path, false);
 
                     //TODO: Change to the Logged user
 
