@@ -79,10 +79,8 @@ namespace School.Web.Controllers
                 }
 
                 var course = _converterHelper.ToCourse(model, path, true);
-
-                //TODO: Change to the Logged user
                 
-                course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
+                course.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
                 await _courseRepository.CreateAsync(course);
 
@@ -163,10 +161,8 @@ namespace School.Web.Controllers
                     }
 
                     var course = _converterHelper.ToCourse(model, path, false);
-
-                    //TODO: Change to the Logged user
-
-                    course.User = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com");
+                    
+                    course.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
                     await _courseRepository.UpdateAsync(course);
 
