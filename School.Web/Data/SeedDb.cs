@@ -25,6 +25,11 @@ namespace School.Web.Data
         {
             await _context.Database.EnsureCreatedAsync(); //Verifica se existe uma database
 
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Customer");
+            await _userHelper.CheckRoleAsync("User");
+
+
             var user = await _userHelper.GetUserByEmailAsync("catalao.daniel@gmail.com"); //Verifica se existe este usuario na base de dados
             if(user == null) //no caso de não existir
             {
@@ -37,10 +42,20 @@ namespace School.Web.Data
                     PhoneNumber = "926613583"
                 };
 
-                var result = await _userHelper.AddUserAsync(user, "123456"); // Aqui se insere o user na base de dados com os dados do user e a password dele
+                var result = await _userHelper.AddUserAsync(user, "123456"); // Aqui se insere o user na base de dados com os dados do user e a password dele               
+
                 if(result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create the user seeder.");
+                }
+
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
+
+                var isInRole = await _userHelper.IsUserInRoleAsync(user, "Admin");
+                if (!isInRole)
+                {
+                    await _userHelper.AddUserToRoleAsync(user, "Admin");
                 }
             }
 

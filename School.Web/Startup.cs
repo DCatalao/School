@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using School.Web.Data;
 using School.Web.Data.Entities;
 using School.Web.Helpers;
@@ -32,6 +34,8 @@ namespace School.Web
 
             services.AddIdentity<User, IdentityRole>(cfg =>
            {
+               cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+               cfg.SignIn.RequireConfirmedEmail = true;
                cfg.User.RequireUniqueEmail = true;
                cfg.Password.RequireDigit = false;
                cfg.Password.RequiredUniqueChars = 0;
@@ -40,7 +44,26 @@ namespace School.Web
                cfg.Password.RequireUppercase = false;
                cfg.Password.RequiredLength = 6;
            })
+           .AddDefaultTokenProviders()
            .AddEntityFrameworkStores<DataContext>();
+
+
+
+            services.AddAuthentication()
+                .AddCookie()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = this.Configuration["Tokens:Issuer"],
+                        ValidAudience = this.Configuration["Tokens:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(this.Configuration["Tokens:Key"]))
+
+                    };
+                });
+
+
 
             // Injection do DataContext com o Entity Framework, criou-se uma configuração que se conecta ao SQL Server através da interface Configuration que tem por função
             // ler e localizar configurações no appsettings.json, neste caso a connection string "Default Connection"
@@ -58,6 +81,7 @@ namespace School.Web
             services.AddScoped<IUserHelper, UserHelper>(); //Injecção da classe UserHelper que serve de camada intermediaria na manipulação dos usuarios (ByPass)
             services.AddScoped<IImageHelper, ImageHelper>(); // Injecção da classe ImageHelper que trata de gravar e editar imagens
             services.AddScoped<IConverterHelper, ConverterHelper>();
+            services.AddScoped<IMailHelper, MailHelper>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
