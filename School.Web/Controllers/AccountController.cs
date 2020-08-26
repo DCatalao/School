@@ -319,6 +319,11 @@ namespace School.Web.Controllers
             return View(model);
         }
 
+        public IActionResult NotAuthorized()
+        {
+            return View();
+        }
+
     }
 
 }

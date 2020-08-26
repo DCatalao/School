@@ -10,7 +10,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data"> @*O enctype inserido aqui avisa que vai ocorrer um upload de um ficheiro*@
+        <form asp-action="Create" enctype="multipart/form-data">
+            @*O enctype inserido aqui avisa que vai ocorrer um upload de um ficheiro*@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="CourseName" class="control-label"></label>
@@ -29,7 +30,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ImageFile" class="control-label"></label> @*Aqui informamos que vai ser o ficheiro da classe CourseViewModel*@
-                <input asp-for="ImageFile" class="form-control" type="file"/> @*O type vai mudar o layout de upload de ficheiro na view*@
+                <input asp-for="ImageFile" class="form-control" type="file" /> @*O type vai mudar o layout de upload de ficheiro na view*@
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -51,5 +52,6 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_ValidationCurrencyPartial");}
 }

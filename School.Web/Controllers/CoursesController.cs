@@ -42,14 +42,14 @@ namespace School.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             var course = await _courseRepository.GetByIdAsync(id.Value); // pelo parametro de entrada do método ser opcional (int? id), o método GetCourse tem de receber o 'value' do Id que pode ser nulo
 
             if (course == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             return View(course);
@@ -111,13 +111,13 @@ namespace School.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             var course = await _courseRepository.GetByIdAsync(id.Value);
             if (course == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             var view = _converterHelper.ToCourseViewModel(course);
@@ -171,7 +171,7 @@ namespace School.Web.Controllers
                 {
                     if (!await _courseRepository.ExistsAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewResult("CourseNotFound");
                     }
                     else
                     {
@@ -189,13 +189,13 @@ namespace School.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             var course = await _courseRepository.GetByIdAsync(id.Value);
             if (course == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("CourseNotFound");
             }
 
             return View(course);
@@ -210,6 +210,11 @@ namespace School.Web.Controllers
             await _courseRepository.DeleteAsync(course);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult CourseNotFound()
+        {
+            return View();
         }
     }
 }
